@@ -1,0 +1,15 @@
+{
+	payload: [
+		{
+			id: // int
+			view_order: // int
+			offset: // float
+			duration: // float
+			content: // string,
+			audio: {
+				path: // string
+			}
+		},
+		...
+	]
+}
