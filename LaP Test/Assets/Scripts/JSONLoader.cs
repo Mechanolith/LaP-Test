@@ -8,7 +8,7 @@ using UnityEngine;
 /// </summary>
 public class JSONLoader : MonoBehaviour {
 
-	public JSONPayload payload;
+	private JSONPayload jsonInfo;
 
 	private void Awake()
 	{
@@ -32,17 +32,22 @@ public class JSONLoader : MonoBehaviour {
 		StreamReader reader = fInfo.OpenText();
 
 		string text;
-		string JSONText = "";
+		string jsonText = "";
 
 		//Read all the text from the file and store it in jsonText.
 		do
 		{
 			text = reader.ReadLine();
-			JSONText += text;
+			jsonText += text;
 		}
 		while (text != null);
 		reader.Close();
 
-		payload = JsonUtility.FromJson<JSONPayload>(JSONText);
+		jsonInfo = JsonUtility.FromJson<JSONPayload>(jsonText);
+	}
+
+	public JSONPayload GetJSONInfo()
+	{
+		return jsonInfo;
 	}
 }
