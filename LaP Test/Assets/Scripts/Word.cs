@@ -17,6 +17,7 @@ public class Word : MonoBehaviour {
 
 	BoxCollider2D boxCol;
 	bool positionLocked = false;
+	Div curLocation;
 
 	void Awake () {
 		textMesh = GetComponentInChildren<TextMeshProUGUI>();
@@ -30,26 +31,25 @@ public class Word : MonoBehaviour {
 
 			if(deathTime <= 0f)
 			{
-				gMan.OnWordMiss(gameObject);
+				gMan.RemoveWord(gameObject, curLocation);
 			}
 		}
 
 		if (!positionLocked)
 		{
-			CheckPosition();
+			//CheckPosition();
 		}
 	}
 
 	public void OnClick()
 	{
-		gMan.OnWordClick(wordInfo);
-
-		Destroy(gameObject);
+		gMan.OnWordClick(wordInfo, gameObject, curLocation);
 	}
 
-	public void SetWord(Payload _word, GameManager _manager)
+	public void SetWord(Payload _word, GameManager _manager, Div _location)
 	{
 		gMan = _manager;
+		curLocation = _location;
 
 		wordInfo = _word;
 
@@ -70,7 +70,7 @@ public class Word : MonoBehaviour {
 
 		textMesh.text = tempString;
 
-		CheckPosition();
+		//CheckPosition();
 		//Debug.Log(wordInfo.content + " = " + textMesh.text);
 	}
 

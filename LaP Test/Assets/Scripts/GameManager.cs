@@ -11,14 +11,15 @@ public class GameManager : MonoBehaviour {
 	public int wordsToSpawn;
 
 	[Header("Word Spawning")]
-	[Range(0f, 0.5f), Tooltip("Distance from the center (on the X axis) before words STOP spawning. Relative to screen size.")]
-	public float xScreenMax;
-	[Range(0f, 0.5f), Tooltip("Distance from the center (on the X axis) before words START spawning. Relative to screen size.")]
-	public float xScreenMin;
-	[Range(0f, 0.5f), Tooltip("Distance from the center (on the Y axis) before words STOP spawning. Relative to screen size.")]
-	public float yScreenMax;
-	[Range(0f, 0.5f), Tooltip("Distance from the center (on the Y axis) before words START spawning. Relative to screen size.")]
-	public float yScreenMin;
+	[Tooltip("The number of divisions along the X axis of the screen. (Divisions determine viable word spawn locations.)")]
+	public int xDivs;
+	[Tooltip("The number of divisions along the Y axis of the screen. (Divisions determine viable word spawn locations.)")]
+	public int yDivs;
+	[Range(0f, 0.49f), Tooltip("The amount of padding (in normalised screenspace) between two divisions on the X axis.")]
+	public float xDivPadding;
+	[Range(0f, 0.49f), Tooltip("The amount of padding (in normalised screenspace) between two divisions on the Y axis.")]
+	public float yDivPadding;
+
 	[Tooltip("The base word object that will be spawned.")]
 	public GameObject wordObject;
 
@@ -28,26 +29,17 @@ public class GameManager : MonoBehaviour {
 
 	Transform canvas;
 	JSONLoader jsonLoader;
-	AudioManager aMan;
+	AudioManager audMan;
+	DivisionSystem divMan;
 	int points;
 
 	void Start() {
 		canvas = GameObject.Find("Canvas").transform;
 		jsonLoader = GetComponent<JSONLoader>();
-		aMan = GetComponent<AudioManager>();
+		audMan = GetComponent<AudioManager>();
+		divMan = GetComponent<DivisionSystem>();
 
-		//Make sure our deadzones make sense. If not, make them the closest viable option (prioritising Min values).
-		if(xScreenMax < xScreenMin)
-		{
-			Debug.LogWarning("xScreenMax is smaller than xScreenMin. xScreenMax is now EQUAL to xScreenMin.");
-			xScreenMax = xScreenMin;
-		}
-
-		if(yScreenMax < yScreenMin)
-		{
-			Debug.LogWarning("yScreenMax is smaller than yScreenMin. yScreenMax is now EQUAL to yScreenMin.");
-			yScreenMax = yScreenMin;
-		}
+		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding);
 
 		//Load previous points.
 		if (PlayerPrefs.HasKey("Points"))
@@ -70,17 +62,18 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void OnWordClick(Payload _wordInfo)
+	public void OnWordClick(Payload _wordInfo, GameObject _word, Div _location)
 	{
-		aMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
-		SpawnWord();
+		audMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
 		GetPoint();
+		RemoveWord(_word, _location);
 	}
 
-	public void OnWordMiss(GameObject _missedWord)
+	public void RemoveWord(GameObject _word, Div _location)
 	{
+		divMan.FreeDiv(_location);
 		SpawnWord();
-		Destroy(_missedWord);
+		Destroy(_word);
 	}
 
 	public void GetPoint()
@@ -98,31 +91,14 @@ public class GameManager : MonoBehaviour {
 	void SpawnWord()
 	{
 		Payload wordToSpawn = GetRandomWord();
+		Div spawnLocation = divMan.GetRandomDiv();
 
-		//Reduce the max X value relative to the word length (so things don't go off screen).
-		float xMax = xScreenMax;
-		//float minDist = 0.5f - (wordToSpawn.content.Length * 0.05f);
-
-		////If the word is unreasonably large, let it go into the inner deadzone.
-		//if(minDist < xScreenMin)
-		//{
-		//	xScreenMin = minDist;
-		//}
-
-		//xMax = Mathf.Clamp(xMax, xScreenMin, minDist);
-
-		//Find where within each band each co-ord sits.
-		float xPos = Random.Range(xMax, xMax);
-		float yPos = Random.Range(yScreenMin, yScreenMax);
-
-		//Randomise which band they're in.
-		float xMod = Random.Range(0f, 1f) < 0.5f ? 0f : 0.5f;
-		float yMod = Random.Range(0f, 1f) < 0.5f ? 0f : 0.5f;
-
-		//Debug.Log("Spawning word at screen pos " + (xPos + xMod) + ", " + (yPos + yMod));
+		//Pick a random position within the Division.
+		float xPos = Random.Range(spawnLocation.bottomLeftBound.x, spawnLocation.topRightBound.x);
+		float yPos = Random.Range(spawnLocation.bottomLeftBound.y, spawnLocation.topRightBound.y);
 
 		//Put it in world space.
-		Vector3 screenVector = new Vector3(xPos + xMod, yPos + yMod, 0f);
+		Vector3 screenVector = new Vector3(xPos, yPos, 0f);
 
 		Vector3 spawnPos = Camera.main.ViewportToWorldPoint(screenVector);
 		spawnPos.z = 0f;	//Make sure the z value is always consistent in world space.
@@ -131,7 +107,7 @@ public class GameManager : MonoBehaviour {
 		GameObject word = Instantiate(wordObject, spawnPos, Quaternion.identity);
 		word.transform.SetParent(canvas);
 
-		word.GetComponent<Word>().SetWord(wordToSpawn, this);
+		word.GetComponent<Word>().SetWord(wordToSpawn, this, spawnLocation);
 	}
 
 	Payload GetRandomWord()
