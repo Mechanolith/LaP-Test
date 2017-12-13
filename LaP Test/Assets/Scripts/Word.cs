@@ -47,6 +47,6 @@ public class Word : MonoBehaviour {
 
 		textMesh.text = tempString;
 		
-		Debug.Log(wordInfo.content + " = " + textMesh.text);
+		//Debug.Log(wordInfo.content + " = " + textMesh.text);
 	}
 }

@@ -6,7 +6,10 @@ public class GameManager : MonoBehaviour {
 
 	[Tooltip("How long before the game starts (in seconds).")]
 	public float startDelay;
+	[Tooltip("The maximum number of words allowed on the screen at any one time.")]
 	public int maxWords;
+	[Tooltip("Increases the amount of time before audio clips are unloaded.")]
+	public float audioPadding;	//Some durations seem to be a bit short. Possibly an error in the JSON.
 	[Tooltip("The base word object that will be spawned.")]
 	public GameObject wordObject;
 	Transform canvas;
@@ -42,7 +45,7 @@ public class GameManager : MonoBehaviour {
 	public void OnWordClick(Payload _wordInfo)
 	{
 		--currentWords;
-		aMan.LoadAndPlayAudio(_wordInfo.audio.path);
+		aMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
 		SpawnWord();
 	}
 

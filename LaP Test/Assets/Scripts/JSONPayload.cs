@@ -11,7 +11,7 @@ public class Payload
 	//public int id;
 	//public int view_order;
 	//public float offset;
-	//public float duration;
+	public float duration;
 	public string content;
 	public Audio audio;
 }

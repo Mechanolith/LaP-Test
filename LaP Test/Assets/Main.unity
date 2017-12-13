@@ -159,6 +159,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startDelay: 1
   maxWords: 5
+  audioPadding: 0.5
   wordObject: {fileID: 1948794393835326, guid: 985ac0a4cde82b147ab2643b79187192, type: 2}
 --- !u!4 &370278507
 Transform:
