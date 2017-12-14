@@ -448,7 +448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0cc921c47c3f634bbbe7cc2a66856b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startDelay: 1
+  startDelay: 1.5
   wordsToSpawn: 5
   xDivs: 3
   yDivs: 3
