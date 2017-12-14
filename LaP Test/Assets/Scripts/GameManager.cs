@@ -36,7 +36,8 @@ public class GameManager : MonoBehaviour {
 
 	[Header("Audio")]
 	[Tooltip("Increases the amount of time before audio clips are unloaded.")]
-	public float audioPadding;	//Some durations seem to be a bit short. Possibly an error in the JSON.
+	public float audioPadding;  //Some durations seem to be a bit short. Possibly an error in the JSON.
+	public AudioClip introAudio;
 
 	Transform wordParent;
 	JSONLoader jsonLoader;
@@ -57,6 +58,8 @@ public class GameManager : MonoBehaviour {
 		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
 		impactUI = GameObject.FindGameObjectWithTag("ImpactUI").GetComponent<ImpactText>();
 		impactUI.SetGMan(this);
+		impactUI.SetText("My World");
+		AudioSource.PlayClipAtPoint(introAudio, Camera.main.transform.position);
 
 		//Load previous points.
 		if (PlayerPrefs.HasKey("Points"))
