@@ -28,7 +28,7 @@ public class ImpactText : MonoBehaviour {
 			_text = _text.ToUpper();
 		}
 
-		Debug.Log("Impact text is now " + _text);
+		//Debug.Log("Impact text is now " + _text);
 
 		tMesh.text = _text;
 

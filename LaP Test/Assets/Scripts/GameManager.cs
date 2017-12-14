@@ -82,7 +82,21 @@ public class GameManager : MonoBehaviour {
 
 	public void OnWordClick(Payload _wordInfo, GameObject _word, Div _location)
 	{
-		audMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
+		switch (curStyle)
+		{
+			case Aesthetic.e_Soft:
+				audMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
+				break;
+
+			case Aesthetic.e_Deep:
+				audMan.PlaySound(_wordInfo.audio.altPath, _wordInfo.duration + audioPadding * 3f);	//Add some extra padding because we don't have the exact length of all these...
+				break;
+
+			default:
+				Debug.LogWarning("An audio response has not been set for the style " + curStyle + ".");
+				break;
+		}
+		
 		GetPoint();
 		impactUI.SetText(_wordInfo.sanitisedContent);
 		RemoveWord(_word, _location);

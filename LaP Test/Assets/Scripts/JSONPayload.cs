@@ -21,4 +21,5 @@ public class Payload
 public class Audio
 {
 	public string path;
+	public string altPath;
 }
