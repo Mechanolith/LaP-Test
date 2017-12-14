@@ -22,13 +22,14 @@ public class Word : MonoBehaviour {
 	}
 	
 	void Update () {
-		//
+		//Count down until the word expires.
 		if(deathTime > 0f)
 		{
 			deathTime -= Time.deltaTime;
 
 			if(deathTime <= 0f)
 			{
+				//Once the word expires, tell the Game Manager. It will handle destroying this.
 				gMan.RemoveWord(gameObject, curLocation);
 			}
 		}
@@ -58,7 +59,7 @@ public class Word : MonoBehaviour {
 		string tempString = wordInfo.sanitisedContent;
 
 		//If the style calls for it, put the text in all caps.
-		if(gMan.curStyle == Aesthetic.e_Deep)
+		if(gMan.GetCurrentAesthetic() == Aesthetic.e_Deep)
 		{
 			tempString = tempString.ToUpper();
 		}
@@ -66,5 +67,14 @@ public class Word : MonoBehaviour {
 		textMesh.text = tempString;
 
 		textMesh.font = gMan.GetCurrentStyle().font;
+	}
+
+	/// <summary>
+	/// Sets the font of the text mesh to the given font.
+	/// </summary>
+	/// <param name="_font">The font to set to.</param>
+	public void SetFont(TMP_FontAsset _font)
+	{
+		textMesh.font = _font;
 	}
 }

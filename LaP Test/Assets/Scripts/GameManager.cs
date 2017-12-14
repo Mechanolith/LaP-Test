@@ -15,8 +15,6 @@ public class GameManager : MonoBehaviour {
 	public float startDelay;
 	[Tooltip("The number of words that will be spawned.")]
 	public int wordsToSpawn;
-	[Tooltip("The current visual/audio aesthetic of the game.")]
-	public Aesthetic curStyle;
 
 	[Header("Word Spawning")]
 	[Tooltip("The number of divisions along the X axis of the screen. (Divisions determine viable word spawn locations.)")]
@@ -45,11 +43,9 @@ public class GameManager : MonoBehaviour {
 	DivisionSystem divMan;
 	AestheticManager aesMan;
 
-	//More UI (and Points Too)
-	GameObject creditsPanel;
+	//Points. That's all.
 	int points;
-	TextMeshProUGUI pointsUI;
-	ImpactText impactUI;
+
 
 	void Start() {
 		//Grab required managers and tranforms.
@@ -62,20 +58,15 @@ public class GameManager : MonoBehaviour {
 		//Create the screen divisions.
 		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding, outerOnly);
 
-		//Set up the UI and play the intro.
-		creditsPanel = GameObject.FindGameObjectWithTag("CreditsPanel");
-		creditsPanel.SetActive(false);
-		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
-		impactUI = GameObject.FindGameObjectWithTag("ImpactUI").GetComponent<ImpactText>();
-		impactUI.SetGMan(this);
-		impactUI.SetText("My World");
+		
+		aesMan.SetImpactText("My World");
 		AudioSource.PlayClipAtPoint(introAudio, Camera.main.transform.position);
 
 		//Load previous points.
 		if (PlayerPrefs.HasKey("Points"))
 		{
 			points = PlayerPrefs.GetInt("Points");
-			pointsUI.text = points.ToString();
+			aesMan.SetPoints(points);
 		}
 	}
 
@@ -119,14 +110,7 @@ public class GameManager : MonoBehaviour {
 		//Show/Hide the Credits
 		if (Input.GetKeyDown(KeyCode.C))
 		{
-			if (creditsPanel.activeInHierarchy)
-			{
-				creditsPanel.SetActive(false);
-			}
-			else
-			{
-				creditsPanel.SetActive(true);
-			}
+			aesMan.ToggleCredits();
 		}
 
 		//Quit the game.
@@ -144,7 +128,7 @@ public class GameManager : MonoBehaviour {
 	/// <param name="_location">The screen Division the word was in.</param>
 	public void OnWordClick(Payload _wordInfo, GameObject _word, Div _location)
 	{
-		switch (curStyle)
+		switch (aesMan.GetCurrentAesthetic())
 		{
 			case Aesthetic.e_Soft:
 				audMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
@@ -155,12 +139,12 @@ public class GameManager : MonoBehaviour {
 				break;
 
 			default:
-				Debug.LogWarning("An audio response has not been set for the style " + curStyle + ".");
+				Debug.LogWarning("An audio response has not been set for the style " + aesMan.GetCurrentAesthetic() + ".");
 				break;
 		}
 		
 		GetPoint();
-		impactUI.SetText(_wordInfo.sanitisedContent);
+		aesMan.SetImpactText(_wordInfo.sanitisedContent);
 		RemoveWord(_word, _location);
 	}
 
@@ -171,6 +155,7 @@ public class GameManager : MonoBehaviour {
 	/// <param name="_location">The screen division the target word is in.</param>
 	public void RemoveWord(GameObject _word, Div _location)
 	{
+		aesMan.RemoveActiveWord(_word);
 		divMan.FreeDiv(_location);
 		SpawnWord();
 		Destroy(_word);
@@ -184,7 +169,7 @@ public class GameManager : MonoBehaviour {
 		++points;
 
 		//Set UI counter.
-		pointsUI.text = points.ToString();
+		aesMan.SetPoints(points);
 
 		//Save it so it isn't lost.
 		PlayerPrefs.SetInt("Points", points);
@@ -213,7 +198,10 @@ public class GameManager : MonoBehaviour {
 		GameObject word = Instantiate(wordObject, spawnPos, Quaternion.identity);
 		word.transform.SetParent(wordParent);
 
-		word.GetComponent<Word>().SetWord(wordToSpawn, this, spawnLocation);
+		Word wordScript = word.GetComponent<Word>();
+		wordScript.SetWord(wordToSpawn, this, spawnLocation);
+
+		aesMan.AddActiveWord(wordScript);
 	}
 
 	/// <summary>
@@ -235,5 +223,14 @@ public class GameManager : MonoBehaviour {
 	public VisualStyle GetCurrentStyle()
 	{
 		return aesMan.GetCurrentStyle();
+	}
+
+	/// <summary>
+	/// Gets the current Aesthetic from the aesthetic manager for reference elsewhere 
+	/// (since other scripts cannot reference the manager directly).
+	/// </summary>
+	public Aesthetic GetCurrentAesthetic()
+	{
+		return aesMan.GetCurrentAesthetic();
 	}
 }

@@ -7,31 +7,41 @@ public class ImpactText : MonoBehaviour {
 
 	Animator textAnim;
 	TextMeshProUGUI tMesh;
-	bool shrinking;
-	GameManager gMan;
+	AestheticManager aesMan;
+	string animString = "Shrink";
 
 	void Start () {
 		tMesh = GetComponent<TextMeshProUGUI>();
 		textAnim = GetComponent<Animator>();
 	}
 
-	public void SetGMan(GameManager _gMan)
-	{
-		gMan = _gMan;
-	}
-
 	public void SetText(string _text)
 	{
 		//If the style calls for it, force all caps.
-		if(gMan.curStyle == Aesthetic.e_Deep)
+		if (aesMan.GetCurrentAesthetic() == Aesthetic.e_Deep)
 		{
 			_text = _text.ToUpper();
 		}
 
-		//Debug.Log("Impact text is now " + _text);
-
 		tMesh.text = _text;
 
-		textAnim.SetTrigger("Shrink");
+		textAnim.SetTrigger(animString);
 	}
+
+	#region Aesthetics
+	public void SetAesMan(AestheticManager _aesMan)
+	{
+		aesMan = _aesMan;
+	}
+
+	public void SetFont(TMP_FontAsset _font)
+	{
+		tMesh.font = _font;
+	}
+
+	public void SetAnimString(string _string)
+	{
+		animString = _string;
+	}
+	#endregion
 }

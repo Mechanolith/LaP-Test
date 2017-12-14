@@ -39,7 +39,6 @@ public class VisualStyle
 /// </summary>
 public class AestheticManager : MonoBehaviour {
 
-
 	[Tooltip("All possible visual styles the game can take on.")]
 	public List<VisualStyle> styles;
 	[Tooltip("The rate at which the game switches styles. (Only applies to things that can be lerped.)")]
@@ -51,9 +50,24 @@ public class AestheticManager : MonoBehaviour {
 	VisualStyle curStyle;
 	Aesthetic curAesthetic;
 
-	void Start () {
+	GameObject creditsPanel;
+	TextMeshProUGUI pointsUI;
+	ImpactText impactUI;
+	List<Word> activeWords = new List<Word>();
+
+	void Awake () {
 		mainCam = Camera.main;
 
+		//Grab and set up the UI
+		creditsPanel = GameObject.FindGameObjectWithTag("CreditsPanel");
+		creditsPanel.SetActive(false);
+		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
+		impactUI = GameObject.FindGameObjectWithTag("ImpactUI").GetComponent<ImpactText>();
+		impactUI.SetAesMan(this);
+	}
+
+	void Start()
+	{
 		//Set the default style.
 		curStyle = GetStyle(startAesthetic);
 		SetAesthetic(startAesthetic);
@@ -82,16 +96,6 @@ public class AestheticManager : MonoBehaviour {
 	}
 
 	/// <summary>
-	/// Sets the current aesthetic to the input, then updates all instant aspects of the game's visual style.
-	/// </summary>
-	/// <param name="_aesthetic">The aesthetic to be set.</param>
-	public void SetAesthetic(Aesthetic _aesthetic)
-	{
-		curStyle = GetStyle(_aesthetic);
-		curAesthetic = _aesthetic;
-	}
-
-	/// <summary>
 	/// Returns a visual style that matches the input aesthetic.
 	/// </summary>
 	/// <param name="_aesthetic">Aesthetic of the style you want returned.</param>
@@ -112,11 +116,118 @@ public class AestheticManager : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Sets the fonts of all active words to match the current style.
+	/// </summary>
+	void SetActiveWordFonts()
+	{
+		for(int indexA = 0; indexA < activeWords.Count; ++indexA)
+		{
+			activeWords[indexA].SetFont(curStyle.font);
+		}
+	}
+
+	#region Public Gets
+	/// <summary>
 	/// Returns the current style for reference elsewhere.
 	/// </summary>
 	/// <returns></returns>
 	public VisualStyle GetCurrentStyle()
 	{
 		return curStyle;
+	}
+
+	/// <summary>
+	/// Returns the current aesthetic for reference elsewhere, so we don't have to pass the whole style.
+	/// </summary>
+	public Aesthetic GetCurrentAesthetic()
+	{
+		return curAesthetic;
+	}
+	#endregion
+
+	#region Public Sets
+	/// <summary>
+	/// Sets the current aesthetic to the input, then updates all instant aspects of the game's visual style.
+	/// </summary>
+	/// <param name="_aesthetic">The aesthetic to be set.</param>
+	public void SetAesthetic(Aesthetic _aesthetic)
+	{
+		//Disable the current particles.
+		curStyle.particleObject.SetActive(false);
+
+		//Update Style info
+		curStyle = GetStyle(_aesthetic);
+		curAesthetic = _aesthetic;
+
+		//Update all the relevant UI to match style.
+		impactUI.SetFont(curStyle.impactFont);
+		impactUI.SetAnimString(curStyle.impactAnim);
+
+		pointsUI.font = curStyle.font;
+
+		curStyle.particleObject.SetActive(true);
+
+		SetActiveWordFonts();
+	}
+
+	/// <summary>
+	/// Sets the word for the Impact Text and has it start its animation.
+	/// </summary>
+	/// <param name="_text">The message the to show as Impact Text</param>
+	public void SetImpactText(string _text)
+	{
+		impactUI.SetText(_text);
+	}
+
+	/// <summary>
+	/// Sets the text for the points UI to the number of points passed to the function.
+	/// </summary>
+	/// <param name="_points">The number to display.</param>
+	public void SetPoints(int _points)
+	{
+		pointsUI.text = _points.ToString();
+	}
+
+	/// <summary>
+	/// Sets the text for the points UI to the string passed in.
+	/// </summary>
+	/// <param name="_pointsString">The string to display.</param>
+	public void SetPoints(string _pointsString)
+	{
+		pointsUI.text = _pointsString;
+	}
+	#endregion
+
+	/// <summary>
+	/// Shows the credits panel if it is hidden, hides it if it is shown.
+	/// </summary>
+	public void ToggleCredits()
+	{
+		if (creditsPanel.activeInHierarchy)
+		{
+			creditsPanel.SetActive(false);
+		}
+		else
+		{
+			creditsPanel.SetActive(true);
+		}
+	}
+
+	/// <summary>
+	/// Adds the given word to the list of active words.
+	/// </summary>
+	/// <param name="_word">The word script to add.</param>
+	public void AddActiveWord(Word _word)
+	{
+		activeWords.Add(_word);
+	}
+
+	/// <summary>
+	/// Removes the given word from the list of active words.
+	/// </summary>
+	/// <param name="_word">The word object containing the correct script to remove.</param>
+	public void RemoveActiveWord(GameObject _word)
+	{
+		activeWords.Remove(_word.GetComponent<Word>());
 	}
 }
