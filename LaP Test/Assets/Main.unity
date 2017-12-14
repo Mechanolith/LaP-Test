@@ -112,6 +112,39 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &31967902 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1801075451105680, guid: 1d1638a7045d287479c60d41ca0420d3,
+    type: 2}
+  m_PrefabInternal: {fileID: 1619477090}
+--- !u!1 &72598048
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 72598049}
+  m_Layer: 0
+  m_Name: Credits Panel
+  m_TagString: CreditsPanel
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &72598049
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 72598048}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.9698093, y: 0.027169064, z: -0.00390625}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 767975708}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &253338323
 GameObject:
   m_ObjectHideFlags: 0
@@ -157,6 +190,7 @@ GameObject:
   - component: {fileID: 370278505}
   - component: {fileID: 370278508}
   - component: {fileID: 370278509}
+  - component: {fileID: 370278510}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -233,6 +267,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   debugMode: 0
+--- !u!114 &370278510
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 370278504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 069f15be0275c9541bf660a06d5eef24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  styles:
+  - aesthetic: 0
+    bgCol: {r: 0.023529414, g: 0.023529414, b: 0.023529414, a: 1}
+    font: {fileID: 11400000, guid: 486475306e4f50442936207a6fd1d3ef, type: 2}
+    impactFont: {fileID: 11400000, guid: 4c0a6ebad6432864b8a6d815f4bd2638, type: 2}
+    impactAnim: Shrink
+    music: {fileID: 8300000, guid: 531de9dbe4843e84d81c3de9a01a6bdb, type: 3}
+    particleObject: {fileID: 31967902}
+  - aesthetic: 1
+    bgCol: {r: 0.99264705, g: 0.7882785, b: 0.96163934, a: 1}
+    font: {fileID: 11400000, guid: 72e530ee9d23d964f8d1a3dc1e0ce488, type: 2}
+    impactFont: {fileID: 11400000, guid: c9af74f41bcd33a4f920902c0e5db4a2, type: 2}
+    impactAnim: Fade
+    music: {fileID: 8300000, guid: 5e55ded046428b847845996583564a86, type: 3}
+    particleObject: {fileID: 31967902}
+  transitionRate: 0.1
+  startAesthetic: 0
 --- !u!1 &432150762
 GameObject:
   m_ObjectHideFlags: 0
@@ -299,8 +361,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+    rgba: 4294177779
+  m_fontColor: {r: 0.9558824, g: 0.9558824, b: 0.9558824, a: 1}
   m_enableVertexGradient: 0
   m_fontColorGradient:
     topLeft: {r: 1, g: 1, b: 1, a: 1}
@@ -695,6 +757,7 @@ RectTransform:
   m_Children:
   - {fileID: 253338324}
   - {fileID: 583166477}
+  - {fileID: 72598049}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

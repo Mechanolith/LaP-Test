@@ -7,6 +7,7 @@ TagManager:
   - PointsUI
   - ImpactUI
   - WordParent
+  - CreditsPanel
   layers:
   - Default
   - TransparentFX

@@ -14,17 +14,15 @@ public class Word : MonoBehaviour {
 	TextMeshProUGUI textMesh;
 	Payload wordInfo;
 	GameManager gMan;
-
-	BoxCollider2D boxCol;
-	bool positionLocked = false;
 	Div curLocation;
 
 	void Awake () {
+		//Grab the required components.
 		textMesh = GetComponentInChildren<TextMeshProUGUI>();
-		boxCol = GetComponent<BoxCollider2D>();
 	}
 	
 	void Update () {
+		//
 		if(deathTime > 0f)
 		{
 			deathTime -= Time.deltaTime;
@@ -34,18 +32,22 @@ public class Word : MonoBehaviour {
 				gMan.RemoveWord(gameObject, curLocation);
 			}
 		}
-
-		if (!positionLocked)
-		{
-			//CheckPosition();
-		}
 	}
 
+	/// <summary>
+	/// Called when the player clicks on the word.
+	/// </summary>
 	public void OnClick()
 	{
 		gMan.OnWordClick(wordInfo, gameObject, curLocation);
 	}
 
+	/// <summary>
+	/// Called as soon as the word is spawned. Sets all relevant data.
+	/// </summary>
+	/// <param name="_word"></param>
+	/// <param name="_manager"></param>
+	/// <param name="_location"></param>
 	public void SetWord(Payload _word, GameManager _manager, Div _location)
 	{
 		gMan = _manager;
@@ -62,47 +64,7 @@ public class Word : MonoBehaviour {
 		}
 
 		textMesh.text = tempString;
-	}
 
-	void CheckPosition()
-	{
-		//Set up the circle cast based on the text bounds.
-		Vector3 origin = gameObject.transform.position;
-		origin.x += boxCol.bounds.extents.x;
-		float radius = boxCol.bounds.extents.y;
-		float distance = boxCol.bounds.size.x;
-
-		RaycastHit2D[] hits = Physics2D.CircleCastAll(origin, radius, -transform.right, distance);
-
-		//If we hit anything (not including hitting yourself)...
-		if(hits.Length > 1)
-		{
-			Vector3 adjustVec = Vector3.zero;
-
-			//Adjust the position based on where the things we hit were.
-			for (int indexA = 0; indexA < hits.Length; ++indexA)
-			{
-				if (hits[indexA].transform != transform)	//Ignore hitting yourself.
-				{
-					//Vector2 posVec = new Vector2(transform.position.x, transform.position.y);
-					//Vector2 dirVec = posVec - hits[indexA].point;
-
-					//Vector3 directionVector = new Vector3(dirVec.x, dirVec.y, 0f);
-
-					Vector3 directionVector = transform.position - hits[indexA].transform.position;
-					adjustVec += directionVector.normalized * adjustmentValue;
-				}
-			}
-
-			transform.position += adjustVec;
-
-			Debug.Log("Adjusting by " + adjustVec);
-		}
-		else
-		{
-			//Otherwise we're good. Stop trying to change things.
-			positionLocked = true;
-			Debug.Log("Hit nothing, position locked!");
-		}
+		textMesh.font = gMan.GetCurrentStyle().font;
 	}
 }

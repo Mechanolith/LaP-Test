@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public enum Aesthetic
-{
-	e_Deep,
-	e_Soft
-}
-
+/// <summary>
+/// Handles the core mangement of the entire game.
+/// Spawns words and handles the results of them being click/not clicked.
+/// Interfaces with all the other managers in the game to play audio, handle screen divisions, etc.
+/// </summary>
 public class GameManager : MonoBehaviour {
 
 	[Header("General")]
@@ -39,22 +38,33 @@ public class GameManager : MonoBehaviour {
 	public float audioPadding;  //Some durations seem to be a bit short. Possibly an error in the JSON.
 	public AudioClip introAudio;
 
+	//Loaders and Managers
 	Transform wordParent;
 	JSONLoader jsonLoader;
 	AudioManager audMan;
 	DivisionSystem divMan;
+	AestheticManager aesMan;
+
+	//More UI (and Points Too)
+	GameObject creditsPanel;
 	int points;
 	TextMeshProUGUI pointsUI;
 	ImpactText impactUI;
 
 	void Start() {
+		//Grab required managers and tranforms.
 		wordParent = GameObject.FindGameObjectWithTag("WordParent").transform;
 		jsonLoader = GetComponent<JSONLoader>();
 		audMan = GetComponent<AudioManager>();
+		aesMan = GetComponent<AestheticManager>();
 		divMan = GetComponent<DivisionSystem>();
 
+		//Create the screen divisions.
 		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding, outerOnly);
 
+		//Set up the UI and play the intro.
+		creditsPanel = GameObject.FindGameObjectWithTag("CreditsPanel");
+		creditsPanel.SetActive(false);
 		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
 		impactUI = GameObject.FindGameObjectWithTag("ImpactUI").GetComponent<ImpactText>();
 		impactUI.SetGMan(this);
@@ -70,19 +80,68 @@ public class GameManager : MonoBehaviour {
 	}
 
 	void Update() {
+		//Wait a moment for the title to play.
 		if (startDelay > 0f)
 		{
 			startDelay -= Time.deltaTime;
 			if (startDelay <= 0f)
 			{
+				//Once the game starts, spawn the required number of words at once.
 				for (int indexA = 0; indexA < wordsToSpawn; ++indexA)
 				{
 					SpawnWord();
 				}
 			}
 		}
+
+		InputCheck();
 	}
 
+	/// <summary>
+	/// Checks all possible player inputs (except clicks) and calls the appropriate responses.
+	/// </summary>
+	void InputCheck()
+	{
+		//Change the visual mode.
+		if (Input.GetKeyDown(KeyCode.M))
+		{
+			//Currently an if because there's only two. Will update if more are added...
+			if(aesMan.GetCurrentStyle().aesthetic == Aesthetic.e_Deep)
+			{
+				aesMan.SetAesthetic(Aesthetic.e_Soft);
+			}
+			else
+			{
+				aesMan.SetAesthetic(Aesthetic.e_Deep);
+			}
+		}
+
+		//Show/Hide the Credits
+		if (Input.GetKeyDown(KeyCode.C))
+		{
+			if (creditsPanel.activeInHierarchy)
+			{
+				creditsPanel.SetActive(false);
+			}
+			else
+			{
+				creditsPanel.SetActive(true);
+			}
+		}
+
+		//Quit the game.
+		if (Input.GetKeyDown(KeyCode.Escape))
+		{
+			Application.Quit();
+		}
+	}
+
+	/// <summary>
+	/// Called by a word when clicked on. Plays a sound, gets a point, sets the impact text, and removes the word.
+	/// </summary>
+	/// <param name="_wordInfo">The details of the clicked word.</param>
+	/// <param name="_word">The GameObject of the word that was clicked on.</param>
+	/// <param name="_location">The screen Division the word was in.</param>
 	public void OnWordClick(Payload _wordInfo, GameObject _word, Div _location)
 	{
 		switch (curStyle)
@@ -105,6 +164,11 @@ public class GameManager : MonoBehaviour {
 		RemoveWord(_word, _location);
 	}
 
+	/// <summary>
+	/// Destroys a given word and creates a new one.
+	/// </summary>
+	/// <param name="_word">GameObject of the word to be destroyed.</param>
+	/// <param name="_location">The screen division the target word is in.</param>
 	public void RemoveWord(GameObject _word, Div _location)
 	{
 		divMan.FreeDiv(_location);
@@ -112,6 +176,9 @@ public class GameManager : MonoBehaviour {
 		Destroy(_word);
 	}
 
+	/// <summary>
+	/// Called when a word is clicked on. Adds a point, updates the display, then saves that point to PlayerPrefs.
+	/// </summary>
 	public void GetPoint()
 	{
 		++points;
@@ -124,6 +191,9 @@ public class GameManager : MonoBehaviour {
 		PlayerPrefs.Save();
 	}
 
+	/// <summary>
+	/// Spawns a random word in a random location in a random division.
+	/// </summary>
 	void SpawnWord()
 	{
 		Payload wordToSpawn = GetRandomWord();
@@ -146,6 +216,9 @@ public class GameManager : MonoBehaviour {
 		word.GetComponent<Word>().SetWord(wordToSpawn, this, spawnLocation);
 	}
 
+	/// <summary>
+	/// Gets a random word from the JSON input.
+	/// </summary>
 	Payload GetRandomWord()
 	{
 		JSONPayload jInfo = jsonLoader.GetJSONInfo();
@@ -153,5 +226,14 @@ public class GameManager : MonoBehaviour {
 		int index = Random.Range(0, jInfo.payload.Count);
 
 		return jInfo.payload[index];
+	}
+
+	/// <summary>
+	/// Gets the current style from the aesthetic manager for reference elsewhere 
+	/// (since other scripts cannot reference the manager directly).
+	/// </summary>
+	public VisualStyle GetCurrentStyle()
+	{
+		return aesMan.GetCurrentStyle();
 	}
 }
