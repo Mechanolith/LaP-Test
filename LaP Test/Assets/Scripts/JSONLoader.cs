@@ -28,7 +28,7 @@ public class JSONLoader : MonoBehaviour {
 	/// </summary>
 	void LoadJSON()
 	{
-		FileInfo fInfo = new FileInfo(Application.dataPath + "/Provided Assets/myworld.ver1.words.json");
+		FileInfo fInfo = new FileInfo(Application.streamingAssetsPath + "/myworld.ver1.words.json");
 		StreamReader reader = fInfo.OpenText();
 
 		string text;

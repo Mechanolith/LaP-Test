@@ -29,7 +29,7 @@ public class AudioInstance
 
 	public void LoadAndPlayAudio(string _path)
 	{
-		string soundPath = "file:///" + Application.dataPath + "/Provided Assets/" + _path;
+		string soundPath = "file:///" + Application.streamingAssetsPath + "/" + _path;
 
 		WWW www = new WWW(soundPath);
 		byte[] soundData = www.bytes;
