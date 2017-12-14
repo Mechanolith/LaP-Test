@@ -35,7 +35,7 @@ public class DivisionSystem : MonoBehaviour {
 	/// <param name="_yCount">The number of divs required on the Y axis.</param>
 	/// <param name="_xPad">Amount of X padding in normalised screen space.</param>
 	/// <param name="_yPad">Amount of Y padding in normalised screen space.</param>
-	public void GenerateDivs(int _xCount, int _yCount, float _xPad, float _yPad)
+	public void GenerateDivs(int _xCount, int _yCount, float _xPad, float _yPad, bool _outerOnly)
 	{
 		xCount = _xCount;
 		yCount = _yCount;
@@ -46,24 +46,32 @@ public class DivisionSystem : MonoBehaviour {
 			Div curDivision = new Div();
 			Vector2 coords = DeriveCoords(indexA);  //This removes the need for a nested loop.
 
-			//Calculate Bottom Left Bound on the X axis.
-			float prevPad = _xPad * (1f + (coords.x * 2f));
-			float prevDiv = xDivSize * coords.x;
+			//Check if the div is going to be on the outer edge.
+			bool xIsOuter = (coords.x == 0 || coords.x == (xCount - 1));
+			bool yIsOuter = (coords.y == 0 || coords.y == (yCount - 1));
 
-			curDivision.bottomLeftBound.x = prevPad + prevDiv;
+			//If we're doing every division OR we're doing the outer divs and this div is on the outer edge.
+			if (!_outerOnly || (_outerOnly && (xIsOuter || yIsOuter)))
+			{
+				//Calculate Bottom Left Bound on the X axis.
+				float prevPad = _xPad * (1f + (coords.x * 2f));
+				float prevDiv = xDivSize * coords.x;
 
-			//Calculate Bottom Left Bound on the Y axis.
-			prevPad = _yPad * (1f + (coords.y * 2f));
-			prevDiv = yDivSize * coords.y;
+				curDivision.bottomLeftBound.x = prevPad + prevDiv;
 
-			curDivision.bottomLeftBound.y = prevPad + prevDiv;
+				//Calculate Bottom Left Bound on the Y axis.
+				prevPad = _yPad * (1f + (coords.y * 2f));
+				prevDiv = yDivSize * coords.y;
 
-			//Calculate Top Right Bounds by adding the known div sizes.
-			curDivision.topRightBound.x = curDivision.bottomLeftBound.x + xDivSize;
-			curDivision.topRightBound.y = curDivision.bottomLeftBound.y + yDivSize;
+				curDivision.bottomLeftBound.y = prevPad + prevDiv;
 
-			//Add it to the list.
-			divisions.Add(curDivision);
+				//Calculate Top Right Bounds by adding the known div sizes.
+				curDivision.topRightBound.x = curDivision.bottomLeftBound.x + xDivSize;
+				curDivision.topRightBound.y = curDivision.bottomLeftBound.y + yDivSize;
+
+				//Add it to the list.
+				divisions.Add(curDivision);
+			}
 		}
 	}
 

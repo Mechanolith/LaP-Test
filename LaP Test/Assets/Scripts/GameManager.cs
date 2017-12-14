@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour {
 
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour {
 	public float xDivPadding;
 	[Range(0f, 0.49f), Tooltip("The amount of padding (in normalised screenspace) between two divisions on the Y axis.")]
 	public float yDivPadding;
+	[Tooltip("If true, words will only spawn in divisions on the outer edge of the grid.")]
+	public bool outerOnly;
 
 	[Tooltip("The base word object that will be spawned.")]
 	public GameObject wordObject;
@@ -32,6 +35,7 @@ public class GameManager : MonoBehaviour {
 	AudioManager audMan;
 	DivisionSystem divMan;
 	int points;
+	TextMeshProUGUI pointsUI;
 
 	void Start() {
 		canvas = GameObject.Find("Canvas").transform;
@@ -39,12 +43,15 @@ public class GameManager : MonoBehaviour {
 		audMan = GetComponent<AudioManager>();
 		divMan = GetComponent<DivisionSystem>();
 
-		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding);
+		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding, outerOnly);
+
+		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
 
 		//Load previous points.
 		if (PlayerPrefs.HasKey("Points"))
 		{
 			points = PlayerPrefs.GetInt("Points");
+			pointsUI.text = points.ToString();
 		}
 	}
 
@@ -79,9 +86,9 @@ public class GameManager : MonoBehaviour {
 	public void GetPoint()
 	{
 		++points;
-		
+
 		//Set UI counter.
-		//TODO
+		pointsUI.text = points.ToString();
 
 		//Save it so it isn't lost.
 		PlayerPrefs.SetInt("Points", points);
