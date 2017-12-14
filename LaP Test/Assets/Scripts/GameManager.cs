@@ -21,10 +21,12 @@ public class GameManager : MonoBehaviour {
 	public int xDivs;
 	[Tooltip("The number of divisions along the Y axis of the screen. (Divisions determine viable word spawn locations.)")]
 	public int yDivs;
+
 	[Range(0f, 0.49f), Tooltip("The amount of padding (in normalised screenspace) between two divisions on the X axis.")]
 	public float xDivPadding;
 	[Range(0f, 0.49f), Tooltip("The amount of padding (in normalised screenspace) between two divisions on the Y axis.")]
 	public float yDivPadding;
+
 	[Tooltip("If true, words will only spawn in divisions on the outer edge of the grid.")]
 	public bool outerOnly;
 
@@ -34,10 +36,10 @@ public class GameManager : MonoBehaviour {
 	[Header("Audio")]
 	[Tooltip("Increases the amount of time before audio clips are unloaded.")]
 	public float audioPadding;  //Some durations seem to be a bit short. Possibly an error in the JSON.
-	public AudioClip introAudio;
+	public AudioClip introAudio;	//Sound clip to play on game start.
 
 	//Loaders and Managers
-	Transform wordParent;
+	Transform wordParent;	//Parent object of all words (to keep UI organised).
 	JSONLoader jsonLoader;
 	AudioManager audMan;
 	DivisionSystem divMan;
@@ -58,7 +60,7 @@ public class GameManager : MonoBehaviour {
 		//Create the screen divisions.
 		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding, outerOnly);
 
-		
+		//Play The Intro
 		aesMan.SetImpactText("My World");
 		AudioSource.PlayClipAtPoint(introAudio, Camera.main.transform.position);
 

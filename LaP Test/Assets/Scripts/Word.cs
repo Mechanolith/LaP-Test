@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+/// Handles the set up and interatctions with a word object.
+/// </summary>
 public class Word : MonoBehaviour {
 
 	[Tooltip("The amount of time (in seconds) before this word will automatically destroy itself.")]
 	public float deathTime = 5f;
-
-	[Tooltip("How far the word will move to get out of the way of something.")]
-	public float adjustmentValue;
 
 	TextMeshProUGUI textMesh;
 	Payload wordInfo;

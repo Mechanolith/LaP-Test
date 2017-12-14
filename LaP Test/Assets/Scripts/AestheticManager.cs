@@ -35,7 +35,7 @@ public class VisualStyle
 }
 
 /// <summary>
-/// Handles the setting and storage of the games various aesthetic themes.
+/// Handles the setting and storage of the game's various aesthetic themes.
 /// </summary>
 public class AestheticManager : MonoBehaviour {
 

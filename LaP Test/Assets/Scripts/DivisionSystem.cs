@@ -136,6 +136,7 @@ public class DivisionSystem : MonoBehaviour {
 		{
 			Vector3 target = Vector3.zero;
 
+			//For all INACTIVE divisions, draw the two corners in RED and GREEN.
 			for (int indexA = 0; indexA < divisions.Count; ++indexA)
 			{
 				Gizmos.color = new Color(1f, 0f, 0f, 0.5f);
@@ -151,6 +152,7 @@ public class DivisionSystem : MonoBehaviour {
 				Gizmos.DrawSphere(Vector3.zero, 1);
 			}
 
+			//For all ACTIVE divisions, draw the two corners in BLUE and WHITE.
 			for (int indexB = 0; indexB < usedDivisions.Count; ++indexB)
 			{
 				Gizmos.color = new Color(0f, 0f, 1f, 0.5f);

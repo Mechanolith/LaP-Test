@@ -15,14 +15,6 @@ public class JSONLoader : MonoBehaviour {
 		LoadJSON();
 	}
 
-	void Start () {
-		
-	}
-
-	void Update () {
-		
-	}
-
 	/// <summary>
 	/// Extracts the JSON from its file and puts it in its appropriate class.
 	/// </summary>
@@ -48,6 +40,10 @@ public class JSONLoader : MonoBehaviour {
 		SanitiseText();
 	}
 
+	/// <summary>
+	/// Loops through all of the JSON content, capitalises each word, and removes any unwanted punctuation.
+	/// Then saves this as part of the payload's info.
+	/// </summary>
 	private void SanitiseText()
 	{
 		for(int indexA = 0; indexA < jsonInfo.payload.Count; ++indexA)
@@ -70,6 +66,9 @@ public class JSONLoader : MonoBehaviour {
 		}
 	}
 
+	/// <summary>
+	/// Returns the entire list of extracted JSON data.
+	/// </summary>
 	public JSONPayload GetJSONInfo()
 	{
 		return jsonInfo;

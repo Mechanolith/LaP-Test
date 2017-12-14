@@ -5,6 +5,9 @@ using System.IO;
 using NAudio;
 using NAudio.Wave;
 
+/// <summary>
+/// A single instance of an audio stream. Plays a single sound.
+/// </summary>
 public class AudioInstance
 {
 	private IWavePlayer waveOut;
@@ -17,6 +20,10 @@ public class AudioInstance
 		duration = 0f;
 	}
 
+	/// <summary>
+	/// Reads an audio file into the Wave Stream from raw data.
+	/// </summary>
+	/// <param name="_data">The raw audio file data.</param>
 	private void LoadAudio(byte[] _data)
 	{
 		MemoryStream memStream = new MemoryStream(_data);
@@ -27,6 +34,10 @@ public class AudioInstance
 		waveOut.Init(volumeStream);
 	}
 
+	/// <summary>
+	/// Reads an audio file from the given path, converts it to raw data, and plays it.
+	/// </summary>
+	/// <param name="_path">The path to the audio file within StreamingAssets.</param>
 	public void LoadAndPlayAudio(string _path)
 	{
 		string soundPath = "file:///" + Application.streamingAssetsPath + "/" + _path;
@@ -40,6 +51,9 @@ public class AudioInstance
 		Resources.UnloadUnusedAssets();
 	}
 
+	/// <summary>
+	/// Clears the Wave Stream of all data.
+	/// </summary>
 	public void UnloadAudio()
 	{
 		waveOut.Stop();
@@ -55,6 +69,9 @@ public class AudioInstance
 	}
 }
 
+/// <summary>
+/// Handles the creation, monitoring, and destruction of all voice lines.
+/// </summary>
 public class AudioManager : MonoBehaviour {
 
 	List<AudioInstance> currentAudio = new List<AudioInstance>();
