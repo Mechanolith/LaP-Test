@@ -8,6 +8,7 @@ TagManager:
   - ImpactUI
   - WordParent
   - CreditsPanel
+  - InstructionUI
   layers:
   - Default
   - TransparentFX

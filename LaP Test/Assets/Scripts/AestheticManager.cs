@@ -52,6 +52,7 @@ public class AestheticManager : MonoBehaviour {
 
 	GameObject creditsPanel;
 	TextMeshProUGUI pointsUI;
+	TextMeshProUGUI instructionUI;
 	ImpactText impactUI;
 	List<Word> activeWords = new List<Word>();
 
@@ -62,6 +63,7 @@ public class AestheticManager : MonoBehaviour {
 		creditsPanel = GameObject.FindGameObjectWithTag("CreditsPanel");
 		creditsPanel.SetActive(false);
 		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
+		instructionUI = GameObject.FindGameObjectWithTag("InstructionUI").GetComponent<TextMeshProUGUI>();
 		impactUI = GameObject.FindGameObjectWithTag("ImpactUI").GetComponent<ImpactText>();
 		impactUI.SetAesMan(this);
 	}
@@ -164,6 +166,7 @@ public class AestheticManager : MonoBehaviour {
 		impactUI.SetAnimString(curStyle.impactAnim);
 
 		pointsUI.font = curStyle.font;
+		instructionUI.font = curStyle.font;
 
 		curStyle.particleObject.SetActive(true);
 
