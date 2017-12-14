@@ -14,6 +14,7 @@ public class Payload
 	public float duration;
 	public string content;
 	public Audio audio;
+	public string sanitisedContent;
 }
 
 [System.Serializable]

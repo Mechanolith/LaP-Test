@@ -53,25 +53,15 @@ public class Word : MonoBehaviour {
 
 		wordInfo = _word;
 
-		string tempString = wordInfo.content;
-		textMesh.text = "";
+		string tempString = wordInfo.sanitisedContent;
 
-		//Remove any punctuation we don't want. (Probably a better system for this many...)
-		tempString = tempString.Replace("\n", "");
-		tempString = tempString.Replace(".", "");
-		tempString = tempString.Replace(",", "");
-		tempString = tempString.Replace("/", "");
-		tempString = tempString.Replace("!", "");
-		tempString = tempString.Replace(";", "");
-		tempString = tempString.Replace(" ", "");
-
-		//Capitalise the first letter.
-		tempString = char.ToUpper(tempString[0]) + tempString.Substring(1);
+		//If the style calls for it, put the text in all caps.
+		if(gMan.curStyle == Aesthetic.e_Deep)
+		{
+			tempString = tempString.ToUpper();
+		}
 
 		textMesh.text = tempString;
-
-		//CheckPosition();
-		//Debug.Log(wordInfo.content + " = " + textMesh.text);
 	}
 
 	void CheckPosition()

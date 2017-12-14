@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+public enum Aesthetic
+{
+	e_Deep,
+	e_Soft
+}
+
 public class GameManager : MonoBehaviour {
 
 	[Header("General")]
@@ -10,6 +16,8 @@ public class GameManager : MonoBehaviour {
 	public float startDelay;
 	[Tooltip("The number of words that will be spawned.")]
 	public int wordsToSpawn;
+	[Tooltip("The current visual/audio aesthetic of the game.")]
+	public Aesthetic curStyle;
 
 	[Header("Word Spawning")]
 	[Tooltip("The number of divisions along the X axis of the screen. (Divisions determine viable word spawn locations.)")]
@@ -30,15 +38,16 @@ public class GameManager : MonoBehaviour {
 	[Tooltip("Increases the amount of time before audio clips are unloaded.")]
 	public float audioPadding;	//Some durations seem to be a bit short. Possibly an error in the JSON.
 
-	Transform canvas;
+	Transform wordParent;
 	JSONLoader jsonLoader;
 	AudioManager audMan;
 	DivisionSystem divMan;
 	int points;
 	TextMeshProUGUI pointsUI;
+	ImpactText impactUI;
 
 	void Start() {
-		canvas = GameObject.Find("Canvas").transform;
+		wordParent = GameObject.FindGameObjectWithTag("WordParent").transform;
 		jsonLoader = GetComponent<JSONLoader>();
 		audMan = GetComponent<AudioManager>();
 		divMan = GetComponent<DivisionSystem>();
@@ -46,6 +55,8 @@ public class GameManager : MonoBehaviour {
 		divMan.GenerateDivs(xDivs, yDivs, xDivPadding, yDivPadding, outerOnly);
 
 		pointsUI = GameObject.FindGameObjectWithTag("PointsUI").GetComponent<TextMeshProUGUI>();
+		impactUI = GameObject.FindGameObjectWithTag("ImpactUI").GetComponent<ImpactText>();
+		impactUI.SetGMan(this);
 
 		//Load previous points.
 		if (PlayerPrefs.HasKey("Points"))
@@ -73,6 +84,7 @@ public class GameManager : MonoBehaviour {
 	{
 		audMan.PlaySound(_wordInfo.audio.path, _wordInfo.duration + audioPadding);
 		GetPoint();
+		impactUI.SetText(_wordInfo.sanitisedContent);
 		RemoveWord(_word, _location);
 	}
 
@@ -112,7 +124,7 @@ public class GameManager : MonoBehaviour {
 
 		//Spawn and setup the word.
 		GameObject word = Instantiate(wordObject, spawnPos, Quaternion.identity);
-		word.transform.SetParent(canvas);
+		word.transform.SetParent(wordParent);
 
 		word.GetComponent<Word>().SetWord(wordToSpawn, this, spawnLocation);
 	}
